@@ -93,6 +93,12 @@ def task_launch_api():
     time.sleep(2)
     print("🚀 API de production lancée sur http://127.0.0.1:8080")
 
+@task(name="0. Update Code from Git")
+def task_git_pull():
+    print("\n=== [TASK] Récupération de la dernière version du code via Git ===")
+    # Lance un git pull pour mettre à jour les fichiers locaux automatiquement
+    subprocess.run(["git", "pull", "origin", "main"], check=False)
+
 
 # DÉFINITION DES FLOWS => Regroupement des fonctions
 
