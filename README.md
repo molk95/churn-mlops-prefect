@@ -51,7 +51,7 @@ The backend provides the endpoints for inference, preparation, and training.
 ```bash
 make run-api
 ```
-*The API will be available at `http://localhost:8080` (Swagger docs at `http://localhost:8080/docs`).*
+*The API will be available at `http://localhost:8080` (Swagger docs at `http://localhost:8080/docs`) .*
 
 ### 2. Start the Frontend Dashboard (Streamlit)
 The frontend provides a UI to interact with the API, visualize data, and manage models.
