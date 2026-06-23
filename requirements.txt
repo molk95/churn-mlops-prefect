@@ -1,7 +1,7 @@
 numpy
 pandas
 scikit-learn
-matplotlib
+matplotlib>=3.5.0
 jupyter
 mlflow
 fastapi
@@ -13,3 +13,6 @@ pylint
 bandit
 pytest
 prefect
+streamlit
+seaborn
+requests
