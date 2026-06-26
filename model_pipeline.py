@@ -12,6 +12,13 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
+try:
+    from elastic_logger import log_mlflow_run, log_system_metrics
+
+    ELASTIC_AVAILABLE = True
+except ImportError:
+    ELASTIC_AVAILABLE = False
+
 
 def prepare_data(data_path="Churn_Modelling(in).csv"):
     encoder = LabelEncoder()
@@ -121,6 +128,37 @@ def train_model(x_train, y_train, x_test=None, y_test=None, model_name="random_f
         mlflow.sklearn.log_model(model, "model")
         if os.path.exists("scaler.joblib"):
             mlflow.log_artifact("scaler.joblib")
+
+        # ── Elasticsearch logging ────────────────────────────────────────────
+        if ELASTIC_AVAILABLE:
+            active_run = mlflow.active_run()
+            run_metrics = {
+                "sys_training_duration_sec": end_time - start_time,
+                "sys_cpu_usage_percent": cpu_usage,
+                "sys_memory_delta_mb": end_memory - start_memory,
+            }
+            if x_test is not None and y_test is not None:
+                run_metrics.update(
+                    {
+                        "model_accuracy": float(acc),
+                        "model_precision": float(precision),
+                        "model_recall": float(recall),
+                        "model_f1_score": float(f1),
+                    }
+                )
+            log_mlflow_run(
+                {
+                    "run_id": active_run.info.run_id if active_run else "",
+                    "run_name": f"Run_{model_name}",
+                    "model_name": model_name,
+                    "params": {**hparams_to_log, "chosen_algorithm": model_name},
+                    "metrics": run_metrics,
+                    "status": "FINISHED",
+                    "start_time": datetime.datetime.utcnow().isoformat(),
+                }
+            )
+            log_system_metrics()
+        # ────────────────────────────────────────────────────────────────────
 
     return model
 

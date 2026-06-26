@@ -17,3 +17,4 @@ streamlit
 seaborn
 requests
 psutil
+elasticsearch==8.13.0

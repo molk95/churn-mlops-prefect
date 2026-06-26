@@ -13,7 +13,7 @@ DOCKER_HUB_USER = molksaouabi
 DOCKER_API_TAG = $(DOCKER_HUB_USER)/$(DOCKER_API_NAME):latest
 DOCKER_UI_TAG = $(DOCKER_HUB_USER)/$(DOCKER_UI_NAME):latest
 
-.PHONY: install format lint security test run-api run-ui prefect-all run-prefect docker-build docker-tag docker-push docker-run compose-up compose-down
+.PHONY: install format lint security test run-api run-ui prefect-all run-prefect docker-build docker-tag docker-push docker-run compose-up compose-down elastic-stack elastic-logs elastic-down
 
 # 1. Installation des dépendances
 install:
@@ -82,3 +82,18 @@ compose-up:
 
 compose-down:
 	docker compose down
+
+# 8. Stack Elasticsearch + Kibana
+elastic-stack:
+	@echo "🚀 Démarrage de Elasticsearch et Kibana..."
+	docker compose up -d --build elasticsearch kibana
+	@echo "✅ Elasticsearch : http://localhost:9200"
+	@echo "✅ Kibana        : http://localhost:5601"
+
+elastic-logs:
+	@echo "📤 Envoi des métriques système et Docker vers Elasticsearch..."
+	$(PYTHON) elastic_logger.py
+
+elastic-down:
+	@echo "🛑 Arrêt de Elasticsearch et Kibana..."
+	docker compose stop elasticsearch kibana

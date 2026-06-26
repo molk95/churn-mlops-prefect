@@ -1,4 +1,5 @@
 services:
+  # ── MLflow Tracking Server ────────────────────────────────────────────────
   mlflow:
     build:
       context: .
@@ -9,6 +10,7 @@ services:
       - .:/mlflow
     restart: always
 
+  # ── FastAPI Backend ───────────────────────────────────────────────────────
   api:
     build:
       context: .
@@ -17,12 +19,17 @@ services:
       - "8080:8080"
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
       - HOME=/tmp
       - MPLCONFIGDIR=/tmp/matplotlib
     volumes:
       - .:/app
+    depends_on:
+      - mlflow
+      - elasticsearch
     restart: always
 
+  # ── Streamlit Frontend ────────────────────────────────────────────────────
   ui:
     build:
       context: .
@@ -35,4 +42,36 @@ services:
       - MPLCONFIGDIR=/tmp/matplotlib
     volumes:
       - .:/app
+    depends_on:
+      - api
     restart: always
+
+  # ── Elasticsearch ─────────────────────────────────────────────────────────
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    restart: always
+
+  # ── Kibana ────────────────────────────────────────────────────────────────
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    restart: always
+
+volumes:
+  esdata:
+    driver: local
