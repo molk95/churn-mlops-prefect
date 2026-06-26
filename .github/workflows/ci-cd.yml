@@ -63,7 +63,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: molksaouabi/molk_saouabi_sde_2_mlops:latest
+          tags: molksaouabi/molk_saouabi_sde_2_mlops_api:latest
 
       - name: Build and Push Streamlit Frontend Image
         uses: docker/build-push-action@v5

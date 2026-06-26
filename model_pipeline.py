@@ -19,14 +19,14 @@ def prepare_data(data_path="Churn_Modelling(in).csv"):
     data = data.drop(["Surname", "Geography"], axis=1)
     data["Gender"] = encoder.fit_transform(data["Gender"])
     data = data.dropna()
-    
+
     X = data.drop(["Exited", "RowNumber", "CustomerId"], axis=1)
     y = data["Exited"]
-    
+
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=1
     )
-    
+
     scaler = StandardScaler()
     x_train_scaled = scaler.fit_transform(x_train)
     x_test_scaled = scaler.transform(x_test)
@@ -34,9 +34,7 @@ def prepare_data(data_path="Churn_Modelling(in).csv"):
     return x_train_scaled, x_test_scaled, y_train, y_test
 
 
-def train_model(
-    x_train, y_train, x_test=None, y_test=None, model_name="random_forest"
-):
+def train_model(x_train, y_train, x_test=None, y_test=None, model_name="random_forest"):
     """Entraîne un modèle et harmonise le logging pour optimiser les graphiques
 
     comparatifs (Scatter, Parallel Coordinates) dans l'UI MLflow.
@@ -53,7 +51,10 @@ def train_model(
         params = {"n_estimators": 100, "max_depth": 10, "random_state": 42}
         model = RandomForestClassifier(**params)
         # Hyperparamètres spécifiques pour l'alignement visuel
-        hparams_to_log = {"complexity_param": params["max_depth"], "regularization_c": 0.0}
+        hparams_to_log = {
+            "complexity_param": params["max_depth"],
+            "regularization_c": 0.0,
+        }
 
     elif model_name == "logistic_regression":
         params = {"C": 1.0, "max_iter": 1000, "random_state": 42}
@@ -68,12 +69,18 @@ def train_model(
             "random_state": 42,
         }
         model = GradientBoostingClassifier(**params)
-        hparams_to_log = {"complexity_param": params["max_depth"], "regularization_c": 0.0}
+        hparams_to_log = {
+            "complexity_param": params["max_depth"],
+            "regularization_c": 0.0,
+        }
     else:
         params = {"n_estimators": 100, "max_depth": 10, "random_state": 42}
         model = RandomForestClassifier(**params)
         model_name = "random_forest"
-        hparams_to_log = {"complexity_param": params["max_depth"], "regularization_c": 0.0}
+        hparams_to_log = {
+            "complexity_param": params["max_depth"],
+            "regularization_c": 0.0,
+        }
 
     start_time = time.time()
     process = psutil.Process(os.getpid())
@@ -112,6 +119,7 @@ def train_model(
 
     return model
 
+
 def evaluate_model(model, x_test, y_test):
     y_prd = model.predict(x_test)
     accuracy = accuracy_score(y_test, y_prd)
@@ -130,11 +138,11 @@ def save_model(model, model_name="model"):
     # Génère un nom du style: random_forest_20260623_2340.joblib
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
     filename = f"{model_name}_{timestamp}.joblib"
-    
+
     joblib.dump(model, filename)
     # On sauvegarde aussi une copie fixe 'model.joblib' pour que l'API /predict fonctionne sans interruption
-    joblib.dump(model, "model.joblib") 
-    
+    joblib.dump(model, "model.joblib")
+
     print(f"Model saved to {filename} and model.joblib")
     return filename
 

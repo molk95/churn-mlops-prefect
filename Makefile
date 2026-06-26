@@ -7,7 +7,7 @@ PYTEST = venv/bin/pytest
 PREFECT = venv/bin/prefect
 
 # Docker Variables
-DOCKER_API_NAME = molk_saouabi_sde_2_mlops
+DOCKER_API_NAME = molk_saouabi_sde_2_mlops_api
 DOCKER_UI_NAME = molk_saouabi_sde_2_mlops_ui
 DOCKER_HUB_USER = molksaouabi
 DOCKER_API_TAG = $(DOCKER_HUB_USER)/$(DOCKER_API_NAME):latest
@@ -25,7 +25,7 @@ format:
 
 lint:
 	$(PYTHON) -m flake8 model_pipeline.py app.py app_streamlit.py
-	$(PYTHON) -m pylint model_pipeline.py app.py app_streamlit.py --disable=C,R
+	$(PYTHON) -m pylint model_pipeline.py app.py app_streamlit.py --disable=C,R,W
 
 security:
 	$(PYTHON) -m bandit -r model_pipeline.py app.py

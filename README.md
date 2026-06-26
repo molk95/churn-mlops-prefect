@@ -152,6 +152,6 @@ The repository includes a GitHub Actions workflow in `.github/workflows/ci-cd.ym
 1. **Lint & Format Check**: Executes code syntax rules (`black`, `flake8`).
 2. **Security Scan**: Checks for vulnerabilities using `bandit`.
 3. **Unit Tests**: Asserts correct application behavior via `pytest`.
-4. **Build & Push**: Compiles the Docker images and pushes them to Docker Hub (`molksaouabi/molk_saouabi_sde_2_mlops`, `molksaouabi/molk_saouabi_sde_2_mlops_ui`, and `molksaouabi/molk_saouabi_sde_2_mlops_mlflow`).
+4. **Build & Push**: Compiles the Docker images and pushes them to Docker Hub (`molksaouabi/molk_saouabi_sde_2_mlops_api`, `molksaouabi/molk_saouabi_sde_2_mlops_ui`, and `molksaouabi/molk_saouabi_sde_2_mlops_mlflow`).
 
 *Note: Ensure you add `DOCKER_HUB_USERNAME` and `DOCKER_HUB_ACCESS_TOKEN` as Repository Secrets in your GitHub repository settings.*

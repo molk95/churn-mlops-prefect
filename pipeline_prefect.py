@@ -18,16 +18,21 @@ from model_pipeline import (
 
 # ÉTAPE 04 : FONCTIONS LIÉES AU SUIVI ET À LA QUALITÉ DU CODE => TASKS
 
+
 @task(name="1. Installer les dépendances")
 def task_install_dependencies():
     print("\n=== [TASK] Installation des dépendances depuis requirements.txt ===")
-    subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], check=True)
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], check=True
+    )
 
 
 @task(name="2. Formatage du code")
 def task_format_code():
     print("\n=== [TASK] Formatage du code avec Black ===")
-    subprocess.run(["black", "pipeline_prefect.py", "model_pipeline.py", "app.py"], check=False)
+    subprocess.run(
+        ["black", "pipeline_prefect.py", "model_pipeline.py", "app.py"], check=False
+    )
 
 
 @task(name="3. Qualité du code")
@@ -57,16 +62,18 @@ def test_sample():
 
 # ÉTAPE 02 : FONCTIONS LIÉES AUX DONNÉES ET AU MODÈLE (TASKS)
 
+
 @task(name="6. Préparation des données")
 def task_prepare_data():
     print("\n=== [TASK] Préparation et nettoyage des données ===")
     x_train, x_test, y_train, y_test = prepare_data()
     return x_train, x_test, y_train, y_test
 
+
 @task(name="7. Entraînement du modèle")
 def task_train_model(x_train, y_train, x_test=None, y_test=None):
     print("\n=== [TASK] Entraînement du modèle avec suivi MLflow ===")
-    mlflow.set_tracking_uri("sqlite:///mlflow.db") 
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
     model = train_model(x_train, y_train, x_test, y_test)
     save_model(model)
     return model
@@ -90,9 +97,12 @@ def task_predict(x_test):
 @task(name="10. Lancement de l'API de Production (app.py)")
 def task_launch_api():
     print("\n=== [TASK] Lancement de l'API de production FastAPI ===")
-    process = subprocess.Popen(["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"])
+    process = subprocess.Popen(
+        ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+    )
     time.sleep(2)
     print("🚀 API de production lancée sur http://127.0.0.1:8080")
+
 
 @task(name="0. Update Code from Git")
 def task_git_pull():
@@ -103,6 +113,7 @@ def task_git_pull():
 
 # DÉFINITION DES FLOWS => Regroupement des fonctions
 
+
 @flow(name="ml-pipeline-all")
 def flow_all():
     task_git_pull()
@@ -112,7 +123,7 @@ def flow_all():
     task_check_security()
     task_run_tests()
     x_train, x_test, y_train, y_test = task_prepare_data()
-    model = task_train_model(x_train, y_train, x_test, y_test) 
+    model = task_train_model(x_train, y_train, x_test, y_test)
     task_evaluate_model(model, x_test, y_test)
     task_predict(x_test)
     task_launch_api()
@@ -150,6 +161,7 @@ def flow_predict():
 @flow(name="ml-pipeline-api")
 def flow_api():
     task_launch_api()
+
 
 # AUTOMATISATION ET GESTION DU CLI =W MAIN
 
