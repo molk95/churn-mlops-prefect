@@ -17,4 +17,4 @@ streamlit
 seaborn
 requests
 psutil
-elasticsearch==8.13.0
+elasticsearch==8.13.0docker
