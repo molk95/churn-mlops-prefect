@@ -65,13 +65,15 @@ def train_endpoint(config: TrainConfig):
         
         global model
         model = new_model
-        acc = model_pipeline.evaluate_model(new_model, state["x_test"], state["y_test"])
+        acc_val = model_pipeline.evaluate_model(new_model, state["x_test"], state["y_test"])
+        # change acc if 0 => will not churn else will churn
+        acc = "will not churn" if acc_val == 0 else "will churn"
         
         return {
             "status": "success", 
             "model_chosen": config.model_name, 
             "saved_filename": saved_filename, # Renvoyé au frontend
-            "accuracy": float(acc)
+            "accuracy": 0 if acc_val == 0 else 1
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur Train: {str(e)}")
@@ -91,7 +93,7 @@ def make_prediction(customer: CustomerData):
         return {
             "prediction": int(prediction[0]),
             "churn_probability": round(float(probability), 4),
-            "status": "Quitte la banque" if prediction[0] == 1 else "Reste dans la banque"
+            "status": "Churn" if prediction[0] == 1 else "Not Churn"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur Inférence: {str(e)}")

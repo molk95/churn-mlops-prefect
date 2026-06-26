@@ -1,111 +1,157 @@
 # Churn Analytics MLOps Pipeline
 
-This project is an end-to-end MLOps pipeline for predicting customer churn. It includes data preparation, model training orchestration, a REST API for inference, and an interactive Streamlit dashboard for monitoring and pipeline administration.
+This project is an end-to-end MLOps pipeline for predicting customer churn. It includes data preparation, model training orchestration, a REST API for inference, an interactive Streamlit dashboard for prediction monitoring, and automated multi-container deployment using Docker and GitHub Actions.
 
-## Features
+---
 
-- **Data Pipeline**: Automated data preparation and feature engineering.
-- **Model Training**: Support for multiple models (Random Forest, Logistic Regression, Gradient Boosting) via dynamic endpoints.
-- **REST API**: Built with FastAPI to handle preparation, training, and prediction requests.
-- **Interactive Dashboard**: A Streamlit UI to visualize data, test predictions, and trigger training jobs.
-- **Orchestration**: Prefect integration for robust pipeline execution.
+## 🌟 Features
 
-## Project Structure
+- **Data Pipeline**: Automated data preparation, cleaning, and scaling using `StandardScaler`.
+- **Model Training**: Support for training multiple models (Random Forest, Logistic Regression, Gradient Boosting) via dynamic endpoints.
+- **REST API**: Built with FastAPI to handle preparation, training, and inference.
+- **Interactive UI**: A Streamlit dashboard to test individual customer churn, monitor training, and download models.
+- **Orchestration**: Prefect workflow orchestration for local and remote pipelines.
+- **Experiment Tracking**: MLflow tracking utilizing SQLite database (`sqlite:///mlflow.db`) with parameter alignment for parallel coordinates plots.
+- **Multi-Container Docker Stack**: Orchestrated deployment of backend API, frontend UI, and MLflow server using Docker Compose.
+- **GitHub Actions CI/CD**: Automatic linting, code quality auditing, unit testing, and Docker Hub image pushing on repository updates.
 
-- `app.py`: FastAPI backend application.
-- `app_streamlit.py`: Streamlit frontend application.
-- `model_pipeline.py`: Core machine learning logic (data prep, training, evaluation).
-- `pipeline_prefect.py` / `deploiement_prefect.py`: Prefect workflow orchestration.
-- `Makefile`: Commands for running, testing, formatting, and linting the application.
+---
 
-## Prerequisites
+## 📂 Project Structure
 
-- Python 3.8+
-- `pip` package manager
+* `app.py`: FastAPI serving backend application.
+* `app_streamlit.py`: Streamlit frontend application.
+* `model_pipeline.py`: Core machine learning logic (preprocessing, training, evaluation, saving).
+* `pipeline_prefect.py` / `deploiement_prefect.py`: Prefect workflow orchestration tasks and schedules.
+* `Dockerfile` / `Dockerfile.ui` / `Dockerfile.mlflow`: Container configurations for API, UI, and MLflow.
+* `docker-compose.yml`: Multi-container local orchestration stack.
+* `.github/workflows/ci-cd.yml`: GitHub Actions automated workflow pipeline.
+* `Makefile`: Automates setup, testing, formatting, linting, and Docker operations.
 
-## Installation
+---
 
-1. **Clone the repository** and navigate to the project directory (if not already there):
+## 🛠️ Installation & Local Setup
+
+1. **Clone the repository**:
    ```bash
-   cd ml_project
+   git clone https://github.com/molk95/churn-mlops-prefect.git
+   cd churn-mlops-prefect
    ```
 
-2. **Create a virtual environment** (optional but recommended):
+2. **Create and Activate a Virtual Environment**:
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. **Install dependencies**:
+3. **Install Dependencies**:
    ```bash
    make install
-   # Or manually: pip install -r requirements.txt
    ```
 
-## How to Run
+---
 
-You can run the different components of the project using the provided `Makefile`:
+## 🚀 Running the Services
 
-### 1. Start the Backend API (FastAPI)
-The backend provides the endpoints for inference, preparation, and training.
-```bash
-make run-api
-```
-*The API will be available at `http://localhost:8080` (Swagger docs at `http://localhost:8080/docs`) .*
+### Local (Bare Metal)
 
-### 2. Start the Frontend Dashboard (Streamlit)
-The frontend provides a UI to interact with the API, visualize data, and manage models.
-```bash
-make run-ui
-```
-*The dashboard will be available at `http://localhost:8501`.*
+You can run each component using the provided `Makefile`:
 
-### 3. Run the Full Prefect Pipeline
-To execute the complete MLOps pipeline using Prefect (preparation, training, evaluation):
-```bash
-make prefect-all
-```
+1. **Start MLflow Server**:
+   ```bash
+   make run-mlflow
+   ```
+   *Available at `http://localhost:5000`.*
 
-## Testing & Quality
+2. **Start Backend API (FastAPI)**:
+   ```bash
+   make run-api
+   ```
+   *Available at `http://localhost:8080` (Swagger docs at `/docs`).*
 
-The project includes unit tests, formatting, and linting tools to maintain code quality.
+3. **Start Frontend Dashboard (Streamlit)**:
+   ```bash
+   make run-ui
+   ```
+   *Available at `http://localhost:8501`.*
 
-- **Run unit tests**:
+4. **Start Prefect Orchestration Server**:
+   ```bash
+   make run-prefect
+   ```
+   *Runs locally on `http://localhost:4200`.*
+
+5. **Run the Prefect Pipeline Flow**:
+   ```bash
+   make prefect-all
+   ```
+
+---
+
+### Local (Docker & Docker Compose)
+
+To spin up the entire MLOps stack (API, Streamlit UI, MLflow) in Docker containers with persistent local volume mapping:
+
+* **Start the Multi-Container Stack**:
+  ```bash
+  make compose-up
+  ```
+
+* **Stop the Stack**:
+  ```bash
+  make compose-down
+  ```
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+* **Run Unit Tests**:
   ```bash
   make test
   ```
-
-- **Format code** (Black):
+* **Auto-format Code (Black)**:
   ```bash
   make format
   ```
-
-- **Run Linters** (Flake8 & Pylint):
+* **Code Linting (Flake8 & Pylint)**:
   ```bash
   make lint
   ```
-
-- **Run Security Checks** (Bandit):
+* **Security Auditing (Bandit)**:
   ```bash
   make security
   ```
 
-## Usage Example (API)
+---
 
-Once the backend API is running, you can predict a customer's churn risk using the `/predict` endpoint:
+## 🐳 Docker Hub Publishing
 
-```bash
-curl -X POST "http://127.0.0.1:8080/predict" \
-     -H "Content-Type: application/json" \
-     -d '{
-          "CreditScore": 600,
-          "Age": 40,
-          "Tenure": 3,
-          "Balance": 60000.0,
-          "NumOfProducts": 2,
-          "HasCrCard": 1,
-          "IsActiveMember": 1,
-          "EstimatedSalary": 50000.0,
-          "Gender": 0
-         }'
-```
+Build, tag, and push local images to Docker Hub under the username `molksaouabi`:
+
+* **Build Images**:
+  ```bash
+  make docker-build
+  ```
+* **Tag and Push to Docker Hub**:
+  ```bash
+  make docker-push
+  ```
+* **Run Containerized Services Individually**:
+  ```bash
+  make docker-run
+  ```
+
+---
+
+## ⚙️ CI/CD with GitHub Actions
+
+The repository includes a GitHub Actions workflow in `.github/workflows/ci-cd.yml` which executes on every push to the `main` branch. 
+
+### Pipeline Stages:
+1. **Lint & Format Check**: Executes code syntax rules (`black`, `flake8`).
+2. **Security Scan**: Checks for vulnerabilities using `bandit`.
+3. **Unit Tests**: Asserts correct application behavior via `pytest`.
+4. **Build & Push**: Compiles the Docker images and pushes them to Docker Hub (`molksaouabi/molk_saouabi_sde_2_mlops`, `molksaouabi/molk_saouabi_sde_2_mlops_ui`, and `molksaouabi/molk_saouabi_sde_2_mlops_mlflow`).
+
+*Note: Ensure you add `DOCKER_HUB_USERNAME` and `DOCKER_HUB_ACCESS_TOKEN` as Repository Secrets in your GitHub repository settings.*

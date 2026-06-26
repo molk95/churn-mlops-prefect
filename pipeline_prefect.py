@@ -4,6 +4,7 @@ import os
 import sys
 import time
 from prefect import task, flow
+import mlflow
 
 # On importe tes fonctions existantes du modèle
 from model_pipeline import (
@@ -62,11 +63,11 @@ def task_prepare_data():
     x_train, x_test, y_train, y_test = prepare_data()
     return x_train, x_test, y_train, y_test
 
-
 @task(name="7. Entraînement du modèle")
-def task_train_model(x_train, y_train):
-    print("\n=== [TASK] Entraînement du modèle Random Forest ===")
-    model = train_model(x_train, y_train)
+def task_train_model(x_train, y_train, x_test=None, y_test=None):
+    print("\n=== [TASK] Entraînement du modèle avec suivi MLflow ===")
+    mlflow.set_tracking_uri("sqlite:///mlflow.db") 
+    model = train_model(x_train, y_train, x_test, y_test)
     save_model(model)
     return model
 
@@ -104,13 +105,14 @@ def task_git_pull():
 
 @flow(name="ml-pipeline-all")
 def flow_all():
+    task_git_pull()
     task_install_dependencies()
     task_format_code()
     task_check_quality()
     task_check_security()
     task_run_tests()
     x_train, x_test, y_train, y_test = task_prepare_data()
-    model = task_train_model(x_train, y_train)
+    model = task_train_model(x_train, y_train, x_test, y_test) 
     task_evaluate_model(model, x_test, y_test)
     task_predict(x_test)
     task_launch_api()

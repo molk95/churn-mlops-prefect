@@ -4,6 +4,9 @@ import requests
 import matplotlib.pyplot as plt
 import seaborn as sns
 import base64
+import os
+
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8080")
 
 # Configuration globale
 st.set_page_config(
@@ -114,7 +117,7 @@ with st.container(border=True):
             "IsActiveMember": active_encoded, "EstimatedSalary": salary
         }
         try:
-            res = requests.post("http://127.0.0.1:8080/predict", json=client_payload, timeout=5)
+            res = requests.post(f"{API_URL}/predict", json=client_payload, timeout=5)
             res.raise_for_status()
             result = res.json()
             prob = result.get("churn_probability", 0.0)
@@ -122,12 +125,12 @@ with st.container(border=True):
             st.markdown("---")
             col_r1, col_r2 = st.columns([1, 2])
             with col_r1:
-                st.metric(label="Probabilité de Churn", value=f"{prob * 100:.2f} %")
+                st.metric(label="Prediction de Churn", value=f"{result.get('prediction')}")
             with col_r2:
                 if result.get("prediction") == 1:
-                    st.markdown(f'<div class="svg-align" style="color:#EF4444; padding:10px; border-left:4px solid #EF4444; background:#FEF2F2;">{SVG_ICONS["error"]} <b>Alerte Risque :</b> {result.get("status", "Risque détecté")}.</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="svg-align" style="color:#EF4444; padding:10px; border-left:4px solid #EF4444; background:#FEF2F2;">{SVG_ICONS["error"]} <b>Alerte :</b> Churn</div>', unsafe_allow_html=True)
                 else:
-                    st.markdown(f'<div class="svg-align" style="color:#10B981; padding:10px; border-left:4px solid #10B981; background:#F0FDF4;">{SVG_ICONS["success"]} <b>Statut Stable :</b> {result.get("status", "Stable")}.</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="svg-align" style="color:#10B981; padding:10px; border-left:4px solid #10B981; background:#F0FDF4;">{SVG_ICONS["success"]} <b>Statut Stable :</b> Not Churn</div>', unsafe_allow_html=True)
         except Exception as e:
             st.markdown(f'<div class="svg-align" style="color:#EF4444;">{SVG_ICONS["error"]} Impossible de joindre l\'API : {e}</div>', unsafe_allow_html=True)
 
@@ -160,7 +163,7 @@ with tab2:
             st.markdown(f'<div class="svg-align">{SVG_ICONS["cpu"]} <b>Étape 1 : Structuration</b></div>', unsafe_allow_html=True)
             if st.button("Exécuter /prepare"):
                 try:
-                    res = requests.post("http://127.0.0.1:8080/prepare", json={"data_path": default_file}, timeout=10)
+                    res = requests.post(f"{API_URL}/prepare", json={"data_path": default_file}, timeout=10)
                     if res.status_code == 200:
                         st.success("Données préparées !")
                     else:
@@ -175,7 +178,7 @@ with tab2:
             
             if st.button("Lancer l'entraînement (/train)"):
                 try:
-                    res = requests.post("http://127.0.0.1:8080/train", json={"model_name": chosen_model}, timeout=30)
+                    res = requests.post(f"{API_URL}/train", json={"model_name": chosen_model}, timeout=30)
                     if res.status_code == 200:
                         data_res = res.json()
                         st.session_state.trained_model = {
@@ -194,7 +197,7 @@ with tab2:
                     filename = model_info["filename"]
                     accuracy = model_info["accuracy"]
                     
-                    st.metric(label="Accuracy", value=f"{accuracy * 100:.2f} %")
+                    st.metric(label="Accuracy", value=f"{int(accuracy)}")
                     st.markdown(f'<div class="svg-align" style="color:#10B981; margin-top:10px; margin-bottom:10px;">{SVG_ICONS["success"]} Modèle {filename} créé.</div>', unsafe_allow_html=True)
                     
                     try:
