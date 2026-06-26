@@ -1,5 +1,7 @@
 FROM python:3.10-slim
 
+ENV GIT_PYTHON_REFRESH=quiet
+
 WORKDIR /mlflow
 
 # Install mlflow
