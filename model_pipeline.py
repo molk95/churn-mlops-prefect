@@ -44,7 +44,7 @@ def train_model(x_train, y_train, x_test=None, y_test=None, model_name="random_f
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
     mlflow.set_experiment("Churn_Analytics_Experiment")
     mlflow.sklearn.autolog()
-    mlflow.disable_system_metrics_logging()
+    mlflow.enable_system_metrics_logging()
 
     # Initialisation des modèles et alignement des hyperparamètres pour l'UI
     if model_name == "random_forest":
@@ -116,6 +116,11 @@ def train_model(x_train, y_train, x_test=None, y_test=None, model_name="random_f
             mlflow.log_metric("model_f1_score", float(f1))
 
             print(f"Metrics - Accuracy: {acc*100:.2f}%")
+
+        # Explicitly log the model and scaler as artifacts
+        mlflow.sklearn.log_model(model, "model")
+        if os.path.exists("scaler.joblib"):
+            mlflow.log_artifact("scaler.joblib")
 
     return model
 

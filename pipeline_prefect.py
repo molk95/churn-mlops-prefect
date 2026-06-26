@@ -142,7 +142,7 @@ def flow_prepare():
 @flow(name="ml-pipeline-train")
 def flow_train():
     x_train, x_test, y_train, y_test = prepare_data()
-    task_train_model(x_train, y_train)
+    task_train_model(x_train, y_train, x_test, y_test)
 
 
 @flow(name="ml-pipeline-evaluate")

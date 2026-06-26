@@ -75,7 +75,11 @@ def train_endpoint(config: TrainConfig):
             )
 
         new_model = model_pipeline.train_model(
-            state["x_train"], state["y_train"], model_name=config.model_name
+            state["x_train"],
+            state["y_train"],
+            state["x_test"],
+            state["y_test"],
+            model_name=config.model_name,
         )
 
         # Récupère le nom du fichier avec le timestamp
