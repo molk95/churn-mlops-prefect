@@ -4,7 +4,7 @@ This project is an end-to-end MLOps pipeline for predicting customer churn. It i
 
 ---
 
-## 🌟 Features
+## Features
 
 - **Data Pipeline**: Automated data preparation, cleaning, and scaling using `StandardScaler`.
 - **Model Training**: Support for training multiple models (Random Forest, Logistic Regression, Gradient Boosting) via dynamic endpoints.
@@ -17,7 +17,7 @@ This project is an end-to-end MLOps pipeline for predicting customer churn. It i
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 * `app.py`: FastAPI serving backend application.
 * `app_streamlit.py`: Streamlit frontend application.
@@ -30,7 +30,7 @@ This project is an end-to-end MLOps pipeline for predicting customer churn. It i
 
 ---
 
-## 🛠️ Installation & Local Setup
+## Installation & Local Setup
 
 1. **Clone the repository**:
    ```bash
@@ -51,7 +51,7 @@ This project is an end-to-end MLOps pipeline for predicting customer churn. It i
 
 ---
 
-## 🚀 Running the Services
+## Running the Services
 
 ### Local (Bare Metal)
 
@@ -104,7 +104,7 @@ To spin up the entire MLOps stack (API, Streamlit UI, MLflow) in Docker containe
 
 ---
 
-## 🧪 Testing & Quality Assurance
+## Testing & Quality Assurance
 
 * **Run Unit Tests**:
   ```bash
@@ -125,7 +125,7 @@ To spin up the entire MLOps stack (API, Streamlit UI, MLflow) in Docker containe
 
 ---
 
-## 🐳 Docker Hub Publishing
+## Docker Hub Publishing
 
 Build, tag, and push local images to Docker Hub under the username `molksaouabi`:
 
@@ -144,7 +144,7 @@ Build, tag, and push local images to Docker Hub under the username `molksaouabi`
 
 ---
 
-## ⚙️ CI/CD with GitHub Actions
+## CI/CD with GitHub Actions
 
 The repository includes a GitHub Actions workflow in `.github/workflows/ci-cd.yml` which executes on every push to the `main` branch. 
 

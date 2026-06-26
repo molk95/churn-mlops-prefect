@@ -1,0 +1,8 @@
+venv/
+.venv/
+.git/
+.github/
+.pytest_cache/
+mlruns/
+__pycache__/
+.agents/

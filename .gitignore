@@ -4,5 +4,6 @@ __pycache__/
 .prefect/
 mlruns/
 mlflow.db
+*backup*.db
 *.log
 .pytest_cache/
