@@ -73,7 +73,7 @@ def task_prepare_data():
 @task(name="7. Entraînement du modèle")
 def task_train_model(x_train, y_train, x_test=None, y_test=None):
     print("\n=== [TASK] Entraînement du modèle avec suivi MLflow ===")
-    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "sqlite:///mlflow.db"))
     model = train_model(x_train, y_train, x_test, y_test)
     save_model(model)
     return model

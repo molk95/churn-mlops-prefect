@@ -16,6 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire project to the container
 COPY . .
 
+# Ensure writable temp dirs for matplotlib config and mlruns
+RUN mkdir -p /tmp/matplotlib /app/mlruns && chmod -R 777 /tmp/matplotlib /app/mlruns
+
 # Expose port 8080 for FastAPI
 EXPOSE 8080
 

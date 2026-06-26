@@ -41,7 +41,7 @@ def train_model(x_train, y_train, x_test=None, y_test=None, model_name="random_f
     """
     print(f"\n=== Début de l'entraînement : {model_name} ===")
 
-    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "sqlite:///mlflow.db"))
     mlflow.set_experiment("Churn_Analytics_Experiment")
     mlflow.sklearn.autolog()
     mlflow.enable_system_metrics_logging()
