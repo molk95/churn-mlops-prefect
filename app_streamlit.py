@@ -264,7 +264,7 @@ with tab2:
                     filename = model_info["filename"]
                     accuracy = model_info["accuracy"]
 
-                    st.metric(label="Accuracy", value=f"{int(accuracy)}")
+                    st.metric(label="Accuracy", value=f"{accuracy * 100:.2f} %")
                     st.markdown(
                         f'<div class="svg-align" style="color:#10B981; margin-top:10px; margin-bottom:10px;">{SVG_ICONS["success"]} Modèle {filename} créé.</div>',
                         unsafe_allow_html=True,

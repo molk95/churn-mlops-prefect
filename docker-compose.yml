@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - .:/mlflow
+      - .:/app
     restart: always
 
   # ── FastAPI Backend ───────────────────────────────────────────────────────

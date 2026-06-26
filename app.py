@@ -97,7 +97,7 @@ def train_endpoint(config: TrainConfig):
             "status": "success",
             "model_chosen": config.model_name,
             "saved_filename": saved_filename,  # Renvoyé au frontend
-            "accuracy": 0 if acc_val == 0 else 1,
+            "accuracy": float(acc_val),
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur Train: {str(e)}")

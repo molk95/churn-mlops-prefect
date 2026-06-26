@@ -2,15 +2,15 @@ FROM python:3.10-slim
 
 ENV GIT_PYTHON_REFRESH=quiet
 
-WORKDIR /mlflow
+WORKDIR /app
 
 # Install mlflow
 RUN pip install --no-cache-dir mlflow==2.17.2
 
 # Pre-create writable artifact/mlruns dirs
-RUN mkdir -p /mlflow/artifacts /mlflow/mlruns && chmod -R 777 /mlflow
+RUN mkdir -p /app/artifacts /app/mlruns && chmod -R 777 /app
 
 EXPOSE 5000
 
 # Expose server with SQLite backend and artifact store inside the container
-CMD ["mlflow", "server", "--backend-store-uri", "sqlite:///mlflow.db", "--default-artifact-root", "./artifacts", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["mlflow", "server", "--backend-store-uri", "sqlite:///mlflow.db", "--default-artifact-root", "./mlruns", "--host", "0.0.0.0", "--port", "5000"]
